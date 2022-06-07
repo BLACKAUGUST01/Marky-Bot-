@@ -73,10 +73,18 @@ def start(update, context):
 This bot can mirror all your links to Google Drive!
 Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
-        sendMarkup(start_string, context.bot, update.message, reply_markup)
+        sendMarkup(start_string, context.bot, update, reply_markup)
     else:
-        sendMarkup('Not Authorized user, Join our channel to use mirror-leech bot', context.bot, update.message, reply_markup)
-
+        if BOT_PM:
+            message = sendMessage(f'Dear {uname},\n\nIf You Want To Use Me, You Have To Join @{CHANNEL_USERNAME}\n\n<b>NOTE:</b> All The Uploaded Links and Leeched Files By You Will Be Sent Here In Your Private Chat From Now.', context.bot, update)
+            Thread(target=auto_delete_message, args=(context.bot, update.message, message)).start()
+            return
+        else:
+            message = sendMarkup(
+                f'Dear {uname},\n\nIf You Want To Use Me, You Have To Join @{CHANNEL_USERNAME}\n\n',
+                context.bot, update, reply_markup)
+            Thread(target=auto_delete_message, args=(context.bot, update.message, message)).start()
+            return
 def restart(update, context):
     restart_message = sendMessage("Restarting...", context.bot, update.message)
     with open(".restartmsg", "w") as f:
