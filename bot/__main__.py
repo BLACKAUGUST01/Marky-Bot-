@@ -65,18 +65,27 @@ def stats(update, context):
 
 def start(update, context):
     buttons = ButtonMaker()
-    buttons.buildbutton("Repo", "https://www.github.com/anasty17/mirror-leech-telegram-bot")
-    buttons.buildbutton("Report Group", "https://t.me/+PRRzqHd31XY3ZWZk")
+    buttons.buildbutton("Channel", "https://t.me/Wolf_Cloud")
+    buttons.buildbutton("Project📽", "https://t.me/WolfBots")
+    uname = f'<a href="tg://user?id={update.message.from_user.id}">{update.message.from_user.first_name}</a>'
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
-        start_string = f'''
-This bot can mirror all your links to Google Drive!
+        start_string = f'''Hey! {uname},\n
+This bot can mirror all your links to Google Drive! and also can Upload them on Telegram if you want.
 Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
-        sendMarkup(start_string, context.bot, update.message, reply_markup)
+        sendMarkup(start_string, context.bot, update, reply_markup)
     else:
-        sendMarkup('Not Authorized user, deploy your own mirror-leech bot', context.bot, update.message, reply_markup)
-
+        if BOT_PM:
+            message = sendMessage(f'Dear {uname},\n\nIf You Want To Use Me, You Have To Join @{CHANNEL_USERNAME}\n\n<b>NOTE:</b> All The Uploaded Links and Leeched Files By You Will Be Sent Here In Your Private Chat From Now.', context.bot, update)
+            Thread(target=auto_delete_message, args=(context.bot, update.message, message)).start()
+            return
+        else:
+            message = sendMarkup(
+                f'Dear {uname},\n\nIf You Want To Use Me, You Have To Join @{CHANNEL_USERNAME}\n\n',
+                context.bot, update, reply_markup)
+            Thread(target=auto_delete_message, args=(context.bot, update.message, message)).start()
+            return
 def restart(update, context):
     restart_message = sendMessage("Restarting...", context.bot, update.message)
     if Interval:
